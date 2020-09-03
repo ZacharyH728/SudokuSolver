@@ -1,111 +1,130 @@
-#include <cstdlib> 
 #include <iostream>
-#include <array>
-#include <list>
-#include <vector>
+#include <cstdio>
+#include <cstdlib>
 #include <set>
+#include <ctime>
+
+#define N 10
 using namespace std;
 
-int i;
-int j;
-int k;
+int (*makethemagic())[N]
+{
 
-vector<int> board{
-1, 7, 0, 3, 0, 5, 6, 9, 0,
-8, 0, 0, 0, 9, 0, 0, 0, 0,
-0, 0, 6, 7, 4, 0, 5, 0, 0,
-5, 4, 0, 2, 0, 0, 0, 0, 0,
-2, 6, 3, 0, 0, 0, 4, 1, 9,
-0, 0, 0, 0, 0, 6, 0, 5, 7,
-0, 0, 9, 0, 8, 3, 0, 6, 0,
-0, 0, 0, 0, 7, 0, 0, 0, 3,
-0, 8, 4, 0, 0, 2, 0, 7, 5
-};
+    int(*table)[N] = new int[N][N];
+    int k=0;
+    for (int i = 0; i < N; i++)
+        for (int j = 0; j < N; j++)
+            table[i][j] = rand() % 10;
 
+     return table;
+}
 
-void print(vector<int> board){
-    for (int i = 0; i < board.size(); i++){   
-        if (i % 3==0){
-            cout << " ";
+bool colchecker(int(*magic)[N], int col, int num){
+    for (int row = 0; row < 9; row++){
+        if (magic[row][col]){
+            return true;
         }
-        if (i % 9==0){
-            cout << "\n"; 
+    }
+    return false;
+}
+
+bool rowchecker(int(*magic)[N], int row, int num){
+    for (int col = 0; col < 9; col++){
+        if (magic[row][col] == num){
+            return true;
         }
-        if (i % 27 == 0)
-        {
+    }
+    return false;
+}
+
+
+bool box(int(*magic)[N],int firstrow, int firstcol, int num){
+    for (int row = 0; row < 3; row++){
+        for (int col = 0; col < 3; col++){
+            if (magic[row + firstrow][col + firstcol] == num){
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+
+void printout(int(*magic)[N]){
+    cout << "\n";
+    for (int row = 0; row < 9; row++){
+        for (int col = 0; col < 9; col++){
+            if (col == 3 || col == 6){
+                cout << " ";
+            }
+            if (magic[row][col] <= 9){
+                cout << " " << magic[row][col] << " ";
+            }else{
+                cout << magic[row][col] << " ";
+            }
+        }
+        if (row == 2 || row == 5){
             cout << "\n";
         }
-        if (board[i] <= 9){
-            cout << " ";
-        }
-        cout << board[i] << " ";
+        cout << "\n";
     }
-    cout << "\n";
-    cout << "\n";
+    cout << "\n"; 
 }
-void checker(vector<int> board){
-    int row = i / 9 + 1;
-    int column = i - 10 * (i / 9) + (1 * i / 9) + 1;
-    for (int i = 0; i < board.size(); i++){
-        //i = 1;
-        int row = i / 9 + 1;
-        int column = i - 10 * (i / 9) + (1 * i / 9) + 1;
-        //cout << board[i] << " " << i << "\n"; //prints out values of board in order and what number on the board
-        //cout << row << " " << column << "\n";
-        for (int j = column; j < 10 - column; j++){
-            //cout << "(" << row << "," << column << ")" << " (" << row << "," << column + j << ")" << j << "\n";
-            if (board[i] == board[i + j] && board[i] != 0){
-                cout << "(" << row << "," << column << ")" <<" Number " << board[i] << " (" << row << "," << column + j <<") " << "Different Column" << "\n";  
+bool arewedoneyet(int (*magic)[N],int &row, int &col){
+    for (row = 0; row < 9; row++){
+        for (col = 0; col < 9; col++){
+            if (magic[row][col] == 0){
+                return true;
             }
         }
-        for (int j = 1; j < 81; j+=9){
-            //cout << j << " :: " << row << "\n";
-            if (board[i] == board[i + 9] && board[i] != 0){
-                cout << "(" << row << "," << column << ")" <<" Number " << board[i] << " (" << row + (j / 9) << "," << column <<") " << "Different Row" << "\n";  
-            }   
-        }
     }
-    set<int> s{board[0]};
-    for (int i = 0; i <= 81;){
-        int row = i / 9 + 1;
-        int column = i - 10 * (i / 9) + (1 * i / 9) + 1;
-        //cout << board[i] << " " << i << "\n";
-        for (int j = row; j <= 9;  j++){   
-            for (int k = column; k <= 9; k++){
-                if (s.find(board[i]) != s.end()){
-                    cout << i << " " << board[i] << "\n";
-                }
-                s.insert(k);
-                /*for (std::set<int>::iterator it = s.begin(); it != s.end(); it++){
-                    std::cout << *it << " " << k << std::endl;
-                }*/
-            }
-            s.clear();
-            //for (int k = row; k < 28; k+=9){
-                /*
-                for (std::set<int>::iterator it = previousNumbers.begin(); it != previousNumbers.end(); it++){
-                    std::cout << *it << std::endl;
-                }
-                if (previousNumbers.find(board[i]) != previousNumbers.end()){
-                    cout << "(" << row << "," << column << ")" <<" Number " << board[k] << " Different Box" << "\n";
-                }
-                previousNumbers.insert(board[k]);
-                */
-                //cout << k << " :: " << row << "\n";
-                 
-            //}
-        }
-        if(i / 6 && column == 7){
-            i += 21;
-        }else{
-            i += 3;
-        }
-    }
-    
+    return false;
 }
-int main(){
-    print(board);
-    checker(board);
+bool isGoodorNah(int(*magic)[N], int row, int col, int num){
+    return !colchecker(magic, col, num) && !rowchecker(magic, row, num) && !box(magic, row - row % 3, col - col % 3, num);
+}
+
+bool isitSolved(int(*magic)[N]){
+    int row, col;
+    if (!arewedoneyet(magic, row, col)){
+        return true;
+    }
+    cout << row << "\n";
+    for (int num = 1; num <= 9; num++){
+        //cout << num << "\n";
+        if (isGoodorNah(magic, row, col, num)){
+            magic[row][col] = num;
+            if (isitSolved(magic)){
+                return true;
+            }
+            magic[row][col] = 0;
+        }
+    }
+    return false;
+}
+
+int main(int argc, char **argv){
+    srand((unsigned int)time(NULL));
+    int t[N][N] = {
+        {3, 0, 6, 5, 0, 8, 4, 0, 0},
+        {5, 2, 0, 0, 0, 0, 0, 0, 0},
+        {0, 8, 7, 0, 0, 0, 0, 3, 1},
+        {0, 0, 3, 0, 1, 0, 0, 8, 0},
+        {9, 0, 0, 8, 6, 3, 0, 0, 5},
+        {0, 5, 0, 0, 9, 0, 6, 0, 0},
+        {1, 3, 0, 0, 0, 0, 2, 5, 0},
+        {0, 0, 0, 0, 0, 0, 0, 7, 4},
+        {0, 0, 5, 2, 0, 6, 3, 0, 0}
+    };
+    //int(*t)[N] = makethemagic();
+    printout(t);
+    if (isitSolved(t)){
+        printout(t);
+        delete[] t;
+    }else{
+        cout << "Cant do it";
+    }
+
+    //cleanup time because the stackoverflow person said so
     //system("PAUSE");
-    return 0;
 }
